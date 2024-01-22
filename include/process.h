@@ -9,32 +9,24 @@ It contains relevant attributes as shown below
 class Process {
  public:
   Process(int pid);
-  int Pid();
-  std::string User();
-  std::string Command();
-  float CpuUtilization();
-  std::string Ram();
-  long int UpTime();
+  int Pid() const;
+  std::string User() const;
+  std::string Command() const;
+  float CpuUtilization() const;
+  void CpuUtilization(long a_ticks, long sys_ticks);
+  long Jiffies() const;
+  std::string Ram() const;
+  long int UpTime() const;
+  bool operator<(const Process& a) const;
+  bool operator>(const Process& a) const;
 
   // Declaration of the private members
  private:
   int pid_;
-  std::string user_;
-  std::string command_;
-  std::string ram_;
-  long int up_time_;
-  float cpu_utilization_;
-
-    // CPU values of a process
-  enum ProcessCPUStates {
-    kUtime_ = 0,
-    kStime_,
-    kCutime_,
-    kCstime_,
-    kStarttime_
-  };
-    //sets the Cpu utilization in each process
-  void setCpuUtilization();
+  float cpu_utilization_{0};
+  long active_ticks{0};
+  long idle_ticks{0};
+  long system_ticks{0};
 };
 
 #endif

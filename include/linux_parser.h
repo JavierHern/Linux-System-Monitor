@@ -52,17 +52,6 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
-std::vector<float> CpuUtilization(int pid);
-
-// CPU values in a process
-enum ProcessCPUStates {
-  kUtime_ = 14,
-  kStime_ = 15,
-  kCutime_ = 16,
-  kCstime_ = 17,
-  kStarttime_ = 22
-};
-
 };  // namespace LinuxParser
 
 #endif

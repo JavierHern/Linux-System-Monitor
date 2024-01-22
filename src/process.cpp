@@ -12,47 +12,39 @@ using std::to_string;
 using std::vector;
 
 // Inicialize all values
-Process::Process(int pid) : 
-    pid_(pid), 
-    user_(LinuxParser::User(Pid())),
-    command_(LinuxParser::Command(Pid())),
-    ram_(LinuxParser::Ram(Pid())),
-    up_time_(LinuxParser::UpTime(Pid()))
-    {
-        setCpuUtilization();
-    }
+Process::Process(int pid) : pid_(pid) {}
 
 // Return this process's ID
-int Process::Pid() { return pid_; }
+int Process::Pid() const { return pid_; }
 
 // Return this process's CPU utilization
-float Process::CpuUtilization() { return cpu_utilization_; }
+float Process::CpuUtilization() const { return cpu_utilization_; }
 
 // Return the command that generated this process
-string Process::Command() { return command_; }
+string Process::Command() const { return LinuxParser::Command(Pid()); }
 
 // Return this process's memory utilization
-string Process::Ram() { return ram_; }
+string Process::Ram() const { return LinuxParser::Ram(Pid()); }
 
 // Return the user (name) that generated this process
-string Process::User() { return user_; }
+string Process::User() const { return LinuxParser::User(Pid()); }
 
 // Return the age of this process (in seconds)
-long int Process::UpTime() { return up_time_; }
+long int Process::UpTime() const { return LinuxParser::UpTime(Pid()); }
 
 
-void Process::setCpuUtilization(){
-    // read values from filesystem
-    long uptime = LinuxParser::UpTime();
-    vector<float> val = LinuxParser::CpuUtilization(Pid());
-    // only if the values could be read sucessfully
-    if (val.size() == 5) {
-        // add utime, stime, cutime, cstime (they are in seconds)
-        float totaltime =
-            val[kUtime_] + val[kStime_] + val[kCutime_] + val[kCstime_];
-        float seconds = uptime - val[kStarttime_];
-        // calculate the processes CPU usage
-        cpu_utilization_ = totaltime / seconds;
-    } else
-        cpu_utilization_ = 0;
+void Process::CpuUtilization(long a_ticks, long sys_ticks){
+  long act_duraction = a_ticks - active_ticks;
+  long total_duration = sys_ticks - system_ticks;
+  cpu_utilization_ = static_cast<float>(act_duraction) / total_duration;
+  active_ticks = a_ticks;
+  system_ticks = sys_ticks;
+}
+
+bool Process::operator<(const Process& a) const{
+    return CpuUtilization() < a.CpuUtilization();
+}
+
+bool Process::operator>(const Process& a) const{
+    return CpuUtilization() > a.CpuUtilization();
 }
