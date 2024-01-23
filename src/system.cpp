@@ -15,38 +15,43 @@ using std::set;
 using std::size_t;
 using std::string;
 using std::vector;
+using std::sort;
 
 // Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
-// This code helper I saw it from the GitHub repo of Udacity students branch:
+// Return a container composed of the system's processes
+// This code helper I saw it from the GitHub repo of Udacity students branch, and I took the inspiration:
 // https://github.com/udacity/CppND-System-Monitor-Project-Updated/tree/solution
-vector<Process>& System::Processes() {
-  vector<int> pids{LinuxParser::Pids()};
+vector<Process>& System::Processes(){
+  vector<int> processes_ids = LinuxParser::Pids();
+  set<int> existing_processes;
 
-  // Create a set
-  set<int> extant_pids;
-  for (Process const& process : processes_) {
-    extant_pids.insert(process.Pid());
+  auto i = processes_.begin();
+  while (i != processes_.end()){
+    existing_processes.insert(i->Pid());
+    i++;
   }
 
-  // Emplace all new processes
-  for (int pid : pids) {
-    if (extant_pids.find(pid) == extant_pids.end())
-      processes_.emplace_back(pid);
+  auto j = processes_ids.begin();
+  while (j != processes_ids.end()){
+    int pd = *j;
+    if (existing_processes.find(pd) == existing_processes.end()){
+      processes_.emplace_back(pd);
+    }
+    j++;
   }
 
-  // Update CPU utilization
-  for (auto& process : processes_) {
-    process.CpuUtilization(LinuxParser::ActiveJiffies(process.Pid()),
-                           LinuxParser::Jiffies());
+  auto k = processes_.begin();
+  while (k != processes_.end()){
+    Process& process = *k;
+    process.CpuUtilization(LinuxParser::ActiveJiffies(process.Pid()), LinuxParser::Jiffies());
+    k++;
   }
 
-  std::sort(processes_.begin(), processes_.end(), std::greater<Process>());
+  sort(processes_.begin(), processes_.end(), std::greater<Process>());
   return processes_;
 }
-
 // Return the system's kernel identifier as a string
 std::string System::Kernel() const { return LinuxParser::Kernel(); }
 
