@@ -1,4 +1,8 @@
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <math.h>
+#include <iomanip>
 
 #include "format.h"
 
@@ -6,27 +10,20 @@ using std::string;
 
 // INPUT: Long int measuring seconds
 // OUTPUT: HH:MM:SS
-string Format::ElapsedTime(long seconds) {
-    string time = "00:00:00";
-    long s = 0;
-    if (seconds > 0){
-        //calculate the hours
-        s = seconds / 3600;
-        time = timeToString(s) + ":";
-        //calculate the minutes
-        s = (seconds / 60) % 60;
-        time += timeToString(s) + ":";
-        //calculate the seconds
-        s = seconds % 60;
-        time += timeToString(s);
-    }
-    return time;
-}
+string Format::ElapsedTime(long value_in_sec){
+    double hours = (double) value_in_sec / 3600.0;
+    double hours_int;
+    double hours_dec = modf(hours, &hours_int);
 
-string Format::timeToString(long s){
-    if(s < 10){
-        return "0" + std::to_string(s);
-    }else{
-        return std::to_string(s);
-    }
+    double minutes = hours_dec * 60.0;
+    double minutes_int;
+    double minutes_dec = modf(minutes, &minutes_int);
+
+    double seconds = minutes_dec * 60.0;
+    double seconds_int;
+    modf(seconds, &seconds_int);
+
+    std::stringstream stringLine;
+    stringLine << std::setfill('0') << std::setw(2) << hours_int << ":" << std::setfill('0') << std::setw(2) << minutes_int << ":" << std::setfill('0') << std::setw(2) << seconds_int;
+    return stringLine.str();
 }

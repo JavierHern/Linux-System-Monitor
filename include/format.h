@@ -4,9 +4,7 @@
 #include <string>
 
 namespace Format {
-std::string ElapsedTime(long times);  // TODO: See src/format.cpp
-// Evaluates if the number is less than 10 and give fortmat
-std::string timeToString(long s);
+std::string ElapsedTime(long value_in_sec);
 };                                    // namespace Format
 
 #endif

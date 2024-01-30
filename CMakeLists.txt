@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12) #Currently using 3.28.1 cmake version
 project(monitor)
 
 set(CURSES_NEED_NCURSES TRUE)

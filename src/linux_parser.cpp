@@ -249,8 +249,8 @@ string LinuxParser::Ram(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while(linestream >> key >> value){
-        if(key == "VmSize"){
-          return std::to_string(std::stof(value)/1024);
+        if(key == "VmRSS"){ //VmRSS give an acurrate representation of memory usage.
+          return std::to_string(std::stol(value)/1024);
         }
       }
     }
@@ -260,19 +260,18 @@ string LinuxParser::Ram(int pid) {
 
 // Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
-  string line, value;
-  long up_time = 0;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (stream.is_open()){
-    for (int i = 0; stream >> value; i++){
-      // read the start time value in clock ticks and convert it to seconds
-      if (i == 13){
-        up_time = std::stol(value) / sysconf(_SC_CLK_TCK);
-        return up_time;
+    string line, value;
+    if (std::getline(stream, line)){
+      std::istringstream linestream(line);
+      for(int stime = 22; stime > 0; stime--){
+        linestream >> value;
       }
+      return LinuxParser::UpTime() - stol(value) / sysconf(_SC_CLK_TCK);
     }
   }
-  return up_time;
+  return 0L;
 }
 
 // Read and return the command associated with a process
