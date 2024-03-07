@@ -4,11 +4,15 @@
 #include <vector>
 
 #include "linux_parser.h"
+//Including the boost 'lexical_cast' library to compare the efficint of casting with the stlib stof
+#include "bootst\lexical_cast.hpp"
 
-using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+
+using boost::lexical_cast;
+using boost::bad_lexical_cast;
 
 // Read and return the Operating System name
 string LinuxParser::OperatingSystem() {
@@ -82,14 +86,18 @@ float LinuxParser::MemoryUtilization() {
       std::istringstream linestream(line);
       while (linestream >> key >> value){
         if ( key == "MemTotal"){
-          //stof transform value from string to float
-          memTotal = stof(value);
+          //using boos to cast value from string to float
+          try{
+            memTotal = lexical_cast<float>(value);
+          } catch (bad_lexical_cast){
+            std::cout << "Exception caught " << std::endl;
+          }
         }
         else if (key == "MemFree"){
-          memFree = stof(value);
+          memFree = lexical_cast<float>(value);
         }
         else if (key ==  "Buffers"){
-          buffer = stof(value);
+          buffer = lexical_cast<float>(value);
         }
       }
     }
